@@ -1,5 +1,6 @@
 # progit
 
+[![codecov](https://codecov.io/github/lucaster/progit/graph/badge.svg?token=UFH6DZQ5XB)](https://codecov.io/github/lucaster/progit)
 [![CI](https://github.com/lucaster/progit/actions/workflows/ci.yml/badge.svg)](https://github.com/lucaster/progit/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/lucaster/progit)](https://github.com/lucaster/progit/releases)
 
