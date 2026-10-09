@@ -176,8 +176,9 @@ gh pr merge --squash --delete-branch                          # 6. merge -> issu
 
 ## Flusso di una release
 
-La release è una funzione nativa di GitHub: non c'è nessun workflow custom.
 Il changelog viene **generato** dai titoli delle PR mergeate dall'ultima release.
+La pubblicazione è automatizzata dal workflow `.github/workflows/release.yml`:
+al push di un tag `v*` compila il progetto e crea la release con il jar allegato.
 
 ### 1. Allinea `main`
 
@@ -189,37 +190,52 @@ git pull
 ### 2. Aggiorna la versione nel `pom.xml`
 
 ```xml
-<version>0.2.0</version>
+<version>0.3.0</version>
 ```
 
-Fallo con una PR normale (`chore: release 0.2.0`) e mergiala. La versione del
-`pom.xml` e il tag della release devono coincidere.
+Fallo con una PR normale (`chore: release 0.3.0`) e mergiala. La versione del
+`pom.xml` e il tag della release devono coincidere: il jar allegato si chiama
+`progit-<versione>.jar`.
 
 ### 3. Crea e spingi il tag
 
 Il tag usa il prefisso `v`:
 
 ```bash
-git tag -a v0.2.0 -m "progit v0.2.0"
-git push origin v0.2.0
+git tag -a v0.3.0 -m "progit v0.3.0"
+git push origin v0.3.0
 ```
 
-### 4. Crea la release con il changelog generato
+### 4. La release si crea da sola
+
+Il push del tag fa partire il workflow `.github/workflows/release.yml`, che:
+
+1. compila con `mvn -B clean package` (test inclusi);
+2. crea la release con il changelog generato (`--generate-notes`);
+3. allega il jar eseguibile `target/progit-<versione>.jar` come asset.
+
+Segui l'avanzamento con:
 
 ```bash
-gh release create v0.2.0 --title "progit v0.2.0" --generate-notes
+gh run watch
 ```
 
-Varianti utili:
+Se preferisci pubblicare a mano (senza il workflow), compila e allega il jar:
+
+```bash
+mvn -B package
+gh release create v0.3.0 --title "progit v0.3.0" --generate-notes target/progit-0.3.0.jar
+```
+
+Varianti utili di `gh release create`:
 
 - `--draft` crea una bozza da rivedere prima di pubblicare
-  (`gh release edit v0.2.0 --draft=false` per pubblicarla);
-- `--prerelease` per una release candidata (`v0.2.0-rc.1`);
-- `--notes-file NOTE.md` per sostituire le note generate con un testo tuo;
-- aggiungi file come asset in coda al comando, es. `... -- target/progit-0.2.0.jar`.
+  (`gh release edit v0.3.0 --draft=false` per pubblicarla);
+- `--prerelease` per una release candidata (`v0.3.0-rc.1`);
+- `--notes-file NOTE.md` per sostituire le note generate con un testo tuo.
 
-Da web: **Releases → Draft a new release**, scegli il tag e premi
-*Generate release notes*.
+Da web: **Releases → Draft a new release**, scegli il tag, premi
+*Generate release notes* e trascina il jar tra gli asset.
 
 ### Risultato
 
@@ -229,8 +245,11 @@ GitHub compila automaticamente:
 ## What's Changed
 * feat: ... by @lucaster in #N
 ## New Contributors
-**Full Changelog**: .../commits/v0.2.0
+**Full Changelog**: .../compare/v0.2.0...v0.3.0
 ```
+
+Alla release è allegato il jar compilato (`progit-<versione>.jar`) nella sezione
+**Assets**.
 
 ## Riferimenti rapidi
 
