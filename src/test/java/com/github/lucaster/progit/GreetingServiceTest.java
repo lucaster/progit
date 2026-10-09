@@ -21,4 +21,10 @@ class GreetingServiceTest {
     void greetsAPersonByName() {
         assertThat(greetingService.greetTo("Luca")).isEqualTo("Hello, Luca!");
     }
+
+    @Test
+    void fallsBackToTheDefaultGreetingForABlankName() {
+        assertThat(greetingService.greetTo("")).isEqualTo("Hello, World!");
+        assertThat(greetingService.greetTo("   ")).isEqualTo("Hello, World!");
+    }
 }
