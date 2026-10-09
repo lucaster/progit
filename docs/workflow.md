@@ -92,8 +92,87 @@ git checkout main
 git pull
 ```
 
-Per collegare una issue alla PR, cita `Closes #12` nella descrizione: al merge
-GitHub chiude la issue automaticamente.
+## Flusso di una issue (con la PR che la chiude)
+
+Quando una modifica nasce da una issue, questo è il giro completo: dalla
+segnalazione alla chiusura automatica al merge.
+
+### 1. Crea la issue
+
+```bash
+gh issue create --title "Il saluto con un nome vuoto stampa 'Hello, !'" \
+  --body "Passi per riprodurre..." --label bug
+```
+
+- Corpo lungo: mettilo in un file e usa `--body-file issue.md`.
+- Aggiungi `--assignee @me` per assegnartela subito.
+
+L'output è l'URL della issue; **annotane il numero** (es. `6`).
+
+Da web: **Issues → New issue**, scegliendo il template.
+
+### 2. Crea il branch e lavora
+
+```bash
+git checkout main && git pull
+git checkout -b fix/blank-name-argument
+# ... modifichi e testi ...
+mvn verify
+git add src
+git commit -m "fix: ignore a blank name argument"
+git push -u origin fix/blank-name-argument
+```
+
+### 3. Apri la PR collegandola alla issue
+
+Il collegamento si fa con una **parola chiave + numero** nel corpo della PR:
+
+```bash
+gh pr create --base main --head fix/blank-name-argument \
+  --title "fix: ignore a blank name argument" \
+  --body "Gestisce l'argomento vuoto.
+
+Closes #6"
+```
+
+Parole chiave riconosciute (chiudono la issue al merge): `Closes #6`,
+`Fixes #6`, `Resolves #6`; valgono anche al plurale (`Closes #6, #7`) e in
+qualsiasi punto del corpo.
+
+Da web: dopo il push GitHub propone *Compare & pull request*; scrivi `Closes #6`
+nella descrizione.
+
+### 4. Verifica il collegamento e la CI
+
+```bash
+gh pr view --json closingIssuesReferences --jq '.closingIssuesReferences[].number'   # -> 6
+gh pr checks --watch
+```
+
+### 5. Mergia: la issue si chiude da sola
+
+```bash
+gh pr merge --squash --delete-branch
+```
+
+Al merge GitHub:
+
+- chiude automaticamente la issue (#6) come *"closed this as completed"*;
+- rende cliccabile il riferimento `#6` nella PR e nel changelog della release.
+
+### Riepilogo
+
+```bash
+gh issue create --title "..." --body "..." --label bug       # 1. issue (numero N)
+git checkout main && git pull
+git checkout -b fix/nome-breve                                # 2. branch
+# ... modifichi e testi ...
+mvn verify
+git commit -am "fix: ..." && git push -u origin fix/nome-breve  # 3. commit + push
+gh pr create --fill --body "Closes #N"                        # 4. PR collegata
+gh pr checks --watch                                          # 5. CI verde
+gh pr merge --squash --delete-branch                          # 6. merge -> issue chiusa
+```
 
 ## Flusso di una release
 
@@ -157,6 +236,8 @@ GitHub compila automaticamente:
 
 | Operazione | Comando |
 |---|---|
+| Vedere le issue aperte | `gh issue list` |
+| Vedere una issue | `gh issue view 6` |
 | Vedere le PR aperte | `gh pr list` |
 | Vedere i check di una PR | `gh pr checks --watch` |
 | Vedere le release | `gh release list` |
