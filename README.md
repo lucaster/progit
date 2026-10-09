@@ -38,6 +38,16 @@ Output:
 Hello, World!
 ```
 
+Per salutare un nome specifico, passalo come argomento:
+
+```bash
+java -jar target/progit-*.jar Luca
+```
+
+```
+Hello, Luca!
+```
+
 Il messaggio è configurabile in `src/main/resources/application.properties`:
 
 ```properties
