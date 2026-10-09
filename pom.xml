@@ -12,7 +12,7 @@
 
     <groupId>com.github.lucaster</groupId>
     <artifactId>progit</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <name>progit</name>
     <description>Example Spring Boot project used to practice the GitHub workflow</description>
 
