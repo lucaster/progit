@@ -17,6 +17,9 @@ public class GreetingService {
     }
 
     public String greetTo(String name) {
+        if (name == null || name.isBlank()) {
+            return greeting;
+        }
         return "Hello, " + name + "!";
     }
 }
