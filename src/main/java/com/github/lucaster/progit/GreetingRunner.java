@@ -14,6 +14,10 @@ public class GreetingRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.out.println(greetingService.greet());
+        if (args.length > 0) {
+            System.out.println(greetingService.greetTo(args[0]));
+        } else {
+            System.out.println(greetingService.greet());
+        }
     }
 }

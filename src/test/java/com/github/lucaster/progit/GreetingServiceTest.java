@@ -16,4 +16,9 @@ class GreetingServiceTest {
     void greetsWithTheDefaultMessage() {
         assertThat(greetingService.greet()).isEqualTo("Hello, World!");
     }
+
+    @Test
+    void greetsAPersonByName() {
+        assertThat(greetingService.greetTo("Luca")).isEqualTo("Hello, Luca!");
+    }
 }
